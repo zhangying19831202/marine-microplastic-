@@ -111,35 +111,61 @@ library(cowplot)
 library(grid)
 library(png)
 
-# Load saved images
-images <- lapply(years_to_plot, function(year) {
-  png::readPNG(paste0("output/global_Mp_", year, ".png"))
-})
+# Load yearly image files (ensure file paths and names are correct)
+img_2010 <- png::readPNG("data/processed/global_Mp_2010.png")
+img_2011 <- png::readPNG("data/processed/global_Mp_2011.png")
+img_2012 <- png::readPNG("data/processed/global_Mp_2012.png")
+img_2013 <- png::readPNG("data/processed/global_Mp_2013.png")
+img_2014 <- png::readPNG("data/processed/global_Mp_2014.png")
+img_2015 <- png::readPNG("data/processed/global_Mp_2015.png")
+img_2016 <- png::readPNG("data/processed/global_Mp_2016.png")
+img_2017 <- png::readPNG("data/processed/global_Mp_2017.png")
+img_2018 <- png::readPNG("data/processed/global_Mp_2018.png")
+img_2019 <- png::readPNG("data/processed/global_Mp_2019.png")
+img_2020 <- png::readPNG("data/processed/global_Mp_2020.png")
 
-# Function to create ggplot for each image
+# Function to embed image into a ggplot object
 create_plot <- function(image) {
   ggplot() +
     annotation_custom(rasterGrob(image, width = unit(1, "npc"), height = unit(1, "npc"))) +
     theme_void()
 }
 
-# Generate plots for each year
-plots <- lapply(images, create_plot)
+# Generate individual subplots
+plot_2010 <- create_plot(img_2010)
+plot_2011 <- create_plot(img_2011)
+plot_2012 <- create_plot(img_2012)
+plot_2013 <- create_plot(img_2013)
+plot_2014 <- create_plot(img_2014)
+plot_2015 <- create_plot(img_2015)
+plot_2016 <- create_plot(img_2016)
+plot_2017 <- create_plot(img_2017)
+plot_2018 <- create_plot(img_2018)
+plot_2019 <- create_plot(img_2019)
+plot_2020 <- create_plot(img_2020)
 
-# Combine all plots in a grid
-combined_plot <- plot_grid(plotlist = plots, ncol = 3, nrow = 4)
+# Combine 11 plots into a 6-row, 2-column layout (last slot is left empty)
+combined_plot <- plot_grid(
+  plot_2010, plot_2011,
+  plot_2012, plot_2013,
+  plot_2014, plot_2015,
+  plot_2016, plot_2017,
+  plot_2018, plot_2019,
+  plot_2020, NULL,  # NULL placeholder for alignment
+  ncol = 2, nrow = 6
+)
 
-# Add custom labels
+# Add custom labels to each plot
 combined_plot_with_labels <- ggdraw(combined_plot) +
   draw_plot_label(
-    label = letters[1:length(years_to_plot)],
-    x = rep(c(0.03, 0.35, 0.67), 4),
-    y = rep(seq(0.995, 0.245, length.out = 4), each = 3),
-    hjust = 0, vjust = 1, size = 12, fontface = "bold"
+    label = c("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k"),
+    x = rep(c(0.03, 0.53), length.out = 11),  # Adjust horizontal position for 2 columns
+    y = c(0.995, 0.995, 0.83, 0.83, 0.66, 0.66, 0.495, 0.495, 0.33, 0.33, 0.165),  # Adjust vertical position for 6 rows
+    hjust = 0, vjust = 1, size = 48, fontface = "bold"
   )
 
-# Save combined figure
+# Save the combined figure as a PNG file
 ggsave("output/Extended Figure 3.png", 
-       plot = combined_plot_with_labels, width = 20, height = 16, units = "in", dpi = 300)
+       plot = combined_plot_with_labels, width = 28, height = 48, units = "in", dpi = 300)
 
-cat("Combined microplastic maps have been saved!\n")
+cat("The figure has been successfully saved as a 6x2 layout!\n")
